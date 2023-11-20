@@ -84,6 +84,7 @@ def display_image(img):
 
 def get_char(pixel_value):
     chars = "@%#*+=-:. "
+    chars = " \u2588"
     index = min(pixel_value // (256 // len(chars)), len(chars) - 1)
     return chars[index]
 
@@ -99,9 +100,9 @@ def play_audio(video_path):
     video_clip.close()   
 
 if __name__ == "__main__":
-    cpuOpt1 = input('Would you like to use resource optimized? Dynamic terminal sizing will no longer be available. (y/n): ')
-    cpuOpt = cpuOpt1 == 'y' or cpuOpt1 == 'Y'
-    video_path = filedialog.askopenfilename()
+    #cpuOpt1 = input('Would you like to use resource optimized? Dynamic terminal sizing will no longer be available. (y/n): ')
+    cpuOpt = True #cpuOpt1 == 'y' or cpuOpt1 == 'Y'
+    video_path = "BadApple.mp4" #filedialog.askopenfilename()
     output_images = []
 
     terminal_size = os.get_terminal_size()
@@ -116,7 +117,7 @@ if __name__ == "__main__":
         audio_thread = threading.Thread(target=play_audio, args=(video_path,))
         print('START')
         time.sleep(1)
-        audio_thread.start()
+        #audio_thread.start()
 
         threads = []
         start_time = time.perf_counter()
@@ -131,20 +132,15 @@ if __name__ == "__main__":
             time.sleep(time_to_sleep)
 
             start_time = expected_start_time
-            
-        for thread in threads:
-            thread.join()
-        audio_thread.join()
-        
-        print('\033[2JDone, Thanks for watching')
     else:
         print('Processing video now')
         fps = decrypt_video(video_path, output_images)
-        print(f'Fps: {fps}\nImages loaded\nLoading audio')
+        print(f'Fps: {fps}\nLoading images now')
+        print('Images loaded\nLoading audio')
         audio_thread = threading.Thread(target=play_audio, args=(video_path,))
         print('START')
         time.sleep(1)
-        audio_thread.start()
+        #audio_thread.start()
 
         threads = []
         start_time = time.perf_counter()
@@ -160,9 +156,9 @@ if __name__ == "__main__":
 
             start_time = expected_start_time
             
-        for thread in threads:
-            thread.join()
-        audio_thread.join()
-        
-        print('\033[2JDone, Thanks for watching')
+    for thread in threads:
+        thread.join()
+    # audio_thread.join()
+    
+    print('\033[2JDone, Thanks for watching')
 
