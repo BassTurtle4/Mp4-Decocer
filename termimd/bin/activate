@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/bassturtle4/Documents/GitHub/FUN/termimd"
+VIRTUAL_ENV="/home/bassturtle4/Documents/GitHub/Mp4-Decoder/termimd"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
