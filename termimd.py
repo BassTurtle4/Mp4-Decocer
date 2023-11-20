@@ -37,7 +37,7 @@ def decrypt_video_opt(video_path, image_list, col, lin):
             break
         img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         img = img.convert("L")
-        img = img.resize((col-3, lin-3))
+        img = img.resize((col-3, lin-2))
         pixels = list(img.getdata())
         width, height = img.size
         imgtxt = ''
@@ -53,7 +53,7 @@ def decrypt_video_opt(video_path, image_list, col, lin):
     return fps
 
 def display_image_in_thread_opt(img, fps, start_time):
-    print('\033[2J' + img)
+    print('\033[2J' + img,end="")
     elapsed_time = time.perf_counter() - start_time
     sleep_duration = max(0, 1 / fps - elapsed_time)
     time.sleep(sleep_duration)
@@ -67,9 +67,7 @@ def display_image_in_thread(img, fps, start_time):
 def display_image(img):
     img = img.convert("L")
     terminal_size = os.get_terminal_size()
-    
-    
-    img = img.resize((terminal_size.columns-3, terminal_size.lines-3))
+    img = img.resize((terminal_size.columns-3, terminal_size.lines-2))
     pixels = list(img.getdata())
     width, height = img.size
     imgtxt = ''
@@ -80,7 +78,7 @@ def display_image(img):
         for c in row_chars_list:
             row_chars += c
         imgtxt += row_chars + '\n'
-    print('\033[2J' + imgtxt)
+    print('\033[2J' + imgtxt,end="")
 
 def get_char(pixel_value):
     chars = "@%#*+=-:. "
@@ -158,7 +156,7 @@ if __name__ == "__main__":
             
     for thread in threads:
         thread.join()
-    # audio_thread.join()
+    #audio_thread.join()
     
     print('\033[2JDone, Thanks for watching')
 
