@@ -6,10 +6,6 @@ import time
 import threading
 from moviepy.editor import VideoFileClip
 
-def load_images(folder_path):
-    image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))]
-    return [os.path.join(folder_path, image) for image in sorted(image_files)]
-
 def decrypt_video(video_path, image_list):
     cap = cv2.VideoCapture(video_path)
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -86,11 +82,6 @@ def get_char(pixel_value):
     chars = "@%#*+=-:. "
     index = min(pixel_value // (256 // len(chars)), len(chars) - 1)
     return chars[index]
-
-def remove_temp_images(folder_path):
-    for file in os.listdir(folder_path):
-        if file.lower().endswith('.png'):
-            os.remove(os.path.join(folder_path, file))
 
 def play_audio(video_path):
     video_clip = VideoFileClip(video_path)
