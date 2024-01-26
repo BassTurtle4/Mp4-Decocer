@@ -6,10 +6,6 @@ import time
 import threading
 from moviepy.editor import VideoFileClip
 
-def load_images(folder_path):
-    image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))]
-    return [os.path.join(folder_path, image) for image in sorted(image_files)]
-
 def decrypt_video(video_path, image_list):
     cap = cv2.VideoCapture(video_path)
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -37,7 +33,7 @@ def decrypt_video_opt(video_path, image_list, col, lin):
             break
         img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         img = img.convert("L")
-        img = img.resize((col-3, lin-2))
+        img = img.resize((col-3, lin-3))
         pixels = list(img.getdata())
         width, height = img.size
         imgtxt = ''
@@ -53,7 +49,7 @@ def decrypt_video_opt(video_path, image_list, col, lin):
     return fps
 
 def display_image_in_thread_opt(img, fps, start_time):
-    print('\033[2J' + img,end="")
+    print('\033[2J' + img)
     elapsed_time = time.perf_counter() - start_time
     sleep_duration = max(0, 1 / fps - elapsed_time)
     time.sleep(sleep_duration)
@@ -67,7 +63,9 @@ def display_image_in_thread(img, fps, start_time):
 def display_image(img):
     img = img.convert("L")
     terminal_size = os.get_terminal_size()
-    img = img.resize((terminal_size.columns-3, terminal_size.lines-2))
+    
+    
+    img = img.resize((terminal_size.columns-3, terminal_size.lines-3))
     pixels = list(img.getdata())
     width, height = img.size
     imgtxt = ''
@@ -78,18 +76,12 @@ def display_image(img):
         for c in row_chars_list:
             row_chars += c
         imgtxt += row_chars + '\n'
-    print('\033[2J' + imgtxt,end="")
+    print('\033[2J' + imgtxt)
 
 def get_char(pixel_value):
     chars = "@%#*+=-:. "
-    chars = " \u2588"
     index = min(pixel_value // (256 // len(chars)), len(chars) - 1)
     return chars[index]
-
-def remove_temp_images(folder_path):
-    for file in os.listdir(folder_path):
-        if file.lower().endswith('.png'):
-            os.remove(os.path.join(folder_path, file))
 
 def play_audio(video_path):
     video_clip = VideoFileClip(video_path)
@@ -98,9 +90,9 @@ def play_audio(video_path):
     video_clip.close()   
 
 if __name__ == "__main__":
-    #cpuOpt1 = input('Would you like to use resource optimized? Dynamic terminal sizing will no longer be available. (y/n): ')
-    cpuOpt = True #cpuOpt1 == 'y' or cpuOpt1 == 'Y'
-    video_path = "BadApple.mp4" #filedialog.askopenfilename()
+    cpuOpt1 = input('Would you like to use resource optimized? Dynamic terminal sizing will no longer be available. (y/n): ')
+    cpuOpt = cpuOpt1 == 'y' or cpuOpt1 == 'Y'
+    video_path = filedialog.askopenfilename()
     output_images = []
 
     terminal_size = os.get_terminal_size()
@@ -115,7 +107,7 @@ if __name__ == "__main__":
         audio_thread = threading.Thread(target=play_audio, args=(video_path,))
         print('START')
         time.sleep(1)
-        #audio_thread.start()
+        audio_thread.start()
 
         threads = []
         start_time = time.perf_counter()
@@ -130,15 +122,20 @@ if __name__ == "__main__":
             time.sleep(time_to_sleep)
 
             start_time = expected_start_time
+            
+        for thread in threads:
+            thread.join()
+        audio_thread.join()
+        
+        print('\033[2JDone, Thanks for watching')
     else:
         print('Processing video now')
         fps = decrypt_video(video_path, output_images)
-        print(f'Fps: {fps}\nLoading images now')
-        print('Images loaded\nLoading audio')
+        print(f'Fps: {fps}\nImages loaded\nLoading audio')
         audio_thread = threading.Thread(target=play_audio, args=(video_path,))
         print('START')
         time.sleep(1)
-        #audio_thread.start()
+        audio_thread.start()
 
         threads = []
         start_time = time.perf_counter()
@@ -154,9 +151,9 @@ if __name__ == "__main__":
 
             start_time = expected_start_time
             
-    for thread in threads:
-        thread.join()
-    #audio_thread.join()
-    
-    print('\033[2JDone, Thanks for watching')
+        for thread in threads:
+            thread.join()
+        audio_thread.join()
+        
+        print('\033[2JDone, Thanks for watching')
 
